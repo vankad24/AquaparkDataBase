@@ -1,0 +1,288 @@
+<h2>Примеры запросов к базе данных</h2>
+<h3>Создание заказа</h3>
+<pre><code>
+INSERT INTO orders (staff_id, attraction_id, order_date)
+VALUES (1, 1, NOW());
+</code></pre>
+
+
+<h3>Изменение заказа</h3>
+<pre><code>
+UPDATE orders
+SET attraction_id = 2
+WHERE id = 1;
+</code></pre>
+
+
+<h3>Удаление заказа</h3>
+<pre><code>
+DELETE FROM orders
+WHERE id = 1;
+</code></pre>
+
+
+<h3>Подсчет стоимости заказа (аттракционов и еды)</h3>
+<pre><code>
+SELECT SUM(a.price) + SUM(f.price * fo.quantity) AS total_price
+FROM orders o
+LEFT JOIN attractions a ON o.attraction_id = a.id
+LEFT JOIN food_orders fo ON o.id = fo.order_id
+LEFT JOIN food f ON fo.food_id = f.id
+WHERE o.id = 1;
+</code></pre>
+
+
+<h3>Список сотрудников, участвовавших в конкретном заказе</h3>
+<pre><code>
+SELECT s.name
+FROM involved_staff i
+JOIN staff s ON i.staff_id = s.id
+WHERE i.order_id = 1;
+</code></pre>
+
+
+<h3>Список сотрудников, не участвовавших в заказах сегодня</h3>
+<pre><code>
+SELECT s.name
+FROM staff s
+WHERE s.id NOT IN (
+  SELECT DISTINCT i.staff_id
+  FROM involved_staff i
+  JOIN orders o ON i.order_id = o.id
+  WHERE DATE(o.order_date) = CURDATE()
+);
+</code></pre>
+
+
+<h3>Топ-10 самых популярных блюд меню</h3>
+<pre><code>
+SELECT f.name, COUNT(*) AS total_orders
+FROM food_orders fo
+JOIN food f ON fo.food_id = f.id
+GROUP BY f.id
+ORDER BY total_orders DESC
+LIMIT 10;
+</code></pre>
+
+<h3>Список блюд с ценой меньше 200</h3>
+<pre><code>
+SELECT name, price
+FROM food
+WHERE price < 200;
+</code></pre>
+
+<h3>Список аттракционов:</h3>
+<pre><code>SELECT id, name, price FROM attractions;</code></pre>
+
+<h3>Cамый популярный аттракцион:</h3>
+<pre><code>SELECT a.name, COUNT(o.attraction_id) as num_orders FROM orders o
+INNER JOIN attractions a ON o.attraction_id = a.id
+GROUP BY o.attraction_id
+ORDER BY num_orders DESC
+LIMIT 1;</code></pre>
+
+<h3>Сколько было посетителей за день:</h3>
+<pre><code>SELECT COUNT(*) FROM orders WHERE DATE(order_date) = CURDATE();</code></pre>
+
+<h3>Cписок сотрудников, отсутствовавших на работе сегодня:</h3>
+<pre><code>SELECT id, name
+FROM staff
+WHERE id NOT IN (
+  SELECT staff_id FROM involved_staff
+  WHERE order_id IN (
+    SELECT id FROM orders WHERE DATE(order_date) = CURDATE()
+  )
+);
+</code></pre>
+
+<h3>Cписок блюд, которые никогда не заказывались:</h3>
+<pre><code>SELECT id, name
+FROM food
+WHERE id NOT IN (
+  SELECT food_id FROM food_orders
+);
+</code></pre>
+
+<h3>Самый популярный аттракцион за месяц:</h3>
+<pre><code>SELECT attractions.name, COUNT(*) AS popularity
+FROM orders
+JOIN attractions ON orders.attraction_id = attractions.id
+WHERE MONTH(orders.order_date) = MONTH(CURRENT_DATE()) AND YEAR(orders.order_date) = YEAR(CURRENT_DATE())
+GROUP BY attractions.id
+ORDER BY popularity DESC
+LIMIT 1;</code></pre>
+
+<h3>Количество посетителей за день:</h3>
+<pre><code>SELECT COUNT(DISTINCT orders.staff_id) AS visitors
+FROM orders
+WHERE DATE(orders.order_date) = CURRENT_DATE();</code></pre>
+
+<h3>Какие сотрудники не участвовали в заказах за последние 7 дней?</h3>
+<pre><code>SELECT staff.name
+FROM staff
+LEFT JOIN involved_staff ON staff.id = involved_staff.staff_id AND involved_staff.order_id IN (
+  SELECT id
+  FROM orders
+  WHERE orders.order_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+)
+WHERE involved_staff.id IS NULL;</code></pre>
+
+<h3>Средняя зарплата сотрудников по каждой должности:</h3>
+<pre><code>SELECT roles.name, AVG(staff.salary) as average_salary
+FROM roles
+INNER JOIN staff ON roles.id = staff.role_id
+GROUP BY roles.name;</code></pre>
+
+select * FROM orders o
+WHERE o.id = 1;
+
+select * FROM attractions_orders
+WHERE order_id = 1;
+
+
+SELECT SUM(a.price*ao.hours) + SUM(f.price*fo.quantity) AS total_price
+FROM orders o
+LEFT JOIN attractions_orders ao ON o.id = ao.order_id
+LEFT JOIN food_orders fo ON o.id = fo.order_id
+LEFT JOIN attractions a ON ao.attraction_id = a.id
+LEFT JOIN food f ON fo.food_id = f.id
+WHERE o.id = 2;
+
+SELECT * FROM attractions_orders ao
+LEFT JOIN attractions a ON ao.attraction_id = a.id
+WHERE ao.order_id = 2;
+
+SELECT * FROM food_orders fo
+LEFT JOIN food f ON fo.food_id = f.id
+WHERE fo.order_id = 2;
+
+SELECT sum(quantity*price) FROM food_orders fo
+LEFT JOIN food f ON fo.food_id = f.id
+WHERE fo.order_id = 2;
+
+SELECT sum(hours*price) FROM attractions_orders ao
+LEFT JOIN attractions a ON ao.attraction_id = a.id
+WHERE ao.order_id = 2;
+
+
+SELECT at.s+bt.s2 from (SELECT sum(quantity*price) as s FROM food_orders fo
+LEFT JOIN food f ON fo.food_id = f.id
+WHERE fo.order_id = 2) at,
+(SELECT sum(hours*price) as s2 FROM attractions_orders ao
+LEFT JOIN attractions a ON ao.attraction_id = a.id
+WHERE ao.order_id = 2) bt;
+
+SET @order_id = 2;
+SELECT 
+    (SELECT SUM(fo.quantity * f.price) 
+     FROM food_orders fo 
+     JOIN food f ON fo.food_id = f.id 
+     WHERE fo.order_id = @order_id) 
+     + 
+    (SELECT SUM(ao.hours * a.price) 
+     FROM attractions_orders ao 
+     JOIN attractions a ON ao.attraction_id = a.id 
+     WHERE ao.order_id = @order_id) AS total_price;
+
+SELECT s.name, r.name
+FROM involved_staff i
+JOIN staff s ON
+    i.staff_id = s.id
+JOIN roles r ON
+    s.role_id = r.id
+WHERE i.order_id = 12;
+
+
+SELECT
+    a.name,
+    COUNT(ao.attraction_id) AS num_orders,
+    a.price
+FROM
+    attractions_orders ao
+JOIN attractions a ON
+    ao.attraction_id = a.id
+GROUP BY
+    a.id
+ORDER BY
+    num_orders
+DESC
+LIMIT 1;
+
+<div class="break-avoid">
+<h3>Самый популярный аттракцион за этот месяц</h3>
+<pre><code>SELECT
+    attractions.name,
+    COUNT(*) AS popularity
+FROM
+    orders
+JOIN attractions ON orders.attraction_id = attractions.id
+WHERE
+    MONTH(orders.order_date) = MONTH(CURRENT_DATE()) 
+      AND YEAR(orders.order_date) = YEAR(CURRENT_DATE())
+GROUP BY
+    attractions.id
+ORDER BY
+    popularity
+DESC
+LIMIT 1;</code></pre>
+</div>
+
+SET @order_id = 43;
+SELECT 
+    (SELECT SUM(fo.quantity * f.price) 
+     FROM food_orders fo 
+     JOIN food f ON fo.food_id = f.id 
+     WHERE fo.order_id = @order_id) 
+     + 
+    (SELECT SUM(ao.hours * a.price) 
+     FROM attractions_orders ao 
+     JOIN attractions a ON ao.attraction_id = a.id 
+     WHERE ao.order_id = @order_id) AS total_price;
+
+25,43,44
+
+3839+2279+11558=17676
+
+WITH ids AS (
+  SELECT id
+  FROM orders
+  WHERE DATE(order_date) = "2023-05-26"
+)
+SELECT * from attractions_orders where order_id in (select id from ids);
+
+
+
+SELECT 
+    (SELECT sum(ao.hours*a.price)
+FROM attractions_orders ao JOIN attractions a ON ao.attraction_id = a.id
+WHERE order_id IN (
+  SELECT id
+  FROM orders
+  WHERE DATE(order_date) = "2023-05-26"
+)) 
+     + 
+    (SELECT SUM(fo.quantity * f.price) 
+     FROM food_orders fo 
+     JOIN food f ON fo.food_id = f.id 
+WHERE order_id IN (
+  SELECT id
+  FROM orders
+  WHERE DATE(order_date) = "2023-05-26"
+)) AS total_price;
+
+
+
+
+WITH orders_on_date AS (
+  SELECT id
+  FROM orders
+  WHERE DATE(order_date) = '2023-05-26'
+)
+SELECT 
+  (SELECT SUM(ao.hours*a.price)
+   FROM attractions_orders ao JOIN attractions a ON ao.attraction_id = a.id
+   WHERE ao.order_id IN (SELECT id FROM orders_on_date))
+  + 
+  (SELECT SUM(fo.quantity * f.price) 
+   FROM food_orders fo JOIN food f ON fo.food_id = f.id 
+   WHERE fo.order_id IN (SELECT id FROM orders_on_date)) AS total_price;

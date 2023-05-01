@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Документация БД Аквапарка</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 20px;
+		}
+		h1 {
+			font-size: 32px;
+			margin-bottom: 20px;
+		}
+		h2 {
+			font-size: 22px;
+			margin-top: 40px;
+			margin-bottom: 8px;
+		}
+		h2+p{
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+		table {
+			border-collapse: collapse;
+			margin: 24px 0;
+		}
+		table th, table td {
+			border: 1px solid #ccc;
+			padding: 8px;
+		}
+		table th {
+			background-color: #f0f0f0;
+		}
+		code, pre{
+			font-family: Söhne Mono,Monaco,Andale Mono,Ubuntu Mono,monospace;
+			font-size: 18px;
+		}
+		pre {
+		    padding: 16px 20px;
+		    margin-bottom: 0px;
+		    margin-top: 0;
+		    width: fit-content;
+		    border-radius: 5px;
+		    background-color: #f0f0f0;
+		}
+		h3{
+		    margin-bottom: 8px;
+		}
+		.title {
+        text-align: center;
+        font-size: 40px;
+        margin-top: 50%;
+      }
+      .author {
+        text-align: center;
+        font-size: 36px;
+        margin-top: 20px;
+      }
+      .supervisor {
+        text-align: center;
+        font-size: 30px;
+        margin-top: 20px;
+      }
+      .date {
+        text-align: center;
+        font-size: 30px;
+        margin-top: 20px;
+        margin-bottom: 500px;
+      }
+      .end p{
+        font-size: 18px;
+      }
+	@media print {
+		.break-avoid {
+			page-break-inside: avoid;
+		}
+	}
+	</style>
+</head>
+<body>
+	<h1 class="title">Документация к базе данных "Аквапарк"</h1>
+    <div class="author">Донской Иван</div>
+    <div class="supervisor">Преподаватель: Громик Никита Андреевич</div>
+    <h1 style="color:#fff;text-align: center;">А так же ChatGPT</h1>
+    <div class="date">Иркутск, 2023 г.</div>
+
+
+<div class="break-avoid">
+	<h2>Таблица "attractions"</h2>
+	<p>Таблица "attractions" содержит информацию об аттракционах Аквапарка, включая их идентификатор, название, описание и цену. Эти данные необходимы, чтобы можно было связать заказы, содержащие посещение аттракционов, с конкретными аттракционами и их ценой.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор аттракциона</td>
+			</tr>
+			<tr>
+				<td>name</td>
+				<td>VARCHAR(100)</td>
+				<td>Название аттракциона</td>
+			</tr>
+			<tr>
+				<td>description</td>
+				<td>TEXT</td>
+				<td>Описание аттракциона</td>
+			</tr>
+			<tr>
+				<td>price</td>
+				<td>DECIMAL(10,2)</td>
+				<td>Цена за одно посещение аттракциона</td>
+			</tr>
+		</tbody>
+	</table>
+	
+<pre><code>-- Создание таблицы attractions
+CREATE TABLE attractions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  description TEXT,
+  price DECIMAL(10,2)
+);
+</code></pre>
+</div>
+
+
+<div class="break-avoid">
+	<h2>Таблица "orders"</h2>
+	<p>Таблица "orders" содержит информацию о каждом заказе в Аквапарке, включая идентификатор заказа, имя клиента, идентификатор сотрудника, обслуживающего заказ, идентификатор аттракциона, на котором был совершен заказ, и время. С помощью FOREIGN KEY связь устанавливается с таблицами staff и attractions, чтобы можно было получить информацию о сотруднике и аттракционе, связанных с каждым заказом.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор заказа</td>
+			</tr>
+			<tr>
+				<td>client_name</td>
+				<td>VARCHAR(100)</td>
+				<td>Имя клиента</td>
+			</tr>
+			<tr>
+				<td>order_date</td>
+				<td>DATETIME</td>
+				<td>Дата и время заказа</td>
+			</tr>
+		</tbody>
+	</table>
+	<pre><code>-- Создание таблицы orders
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  client_name VARCHAR(100),
+  order_date DATETIME,
+);
+</code></pre>
+</div>
+
+
+<div class="break-avoid">
+<h2>Таблица "attractions_orders"</h2>
+<p>Таблица "attractions_orders" содержит информацию о том, какие аттракционы были заказаны в каждом заказе, включая идентификатор заказа, идентификатор аттракциона, количество оплаченных часов и идентификатор этой записи. С помощью FOREIGN KEY связь устанавливается с таблицами orders и attractions, чтобы можно было получить информацию о заказе и аттракционах.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор заказа с аттракционом</td>
+			</tr>
+			<tr>
+				<td>order_id</td>
+				<td>INT</td>
+				<td>Идентификатор заказа, к которому относится данный заказ аттракциона (связь с таблицей "orders")</td>
+			</tr>
+			<tr>
+				<td>attraction_id</td>
+				<td>INT</td>
+				<td>Идентификатор аттракциона (связь с таблицей "attractions")</td>
+			</tr>
+			<tr>
+				<td>hours</td>
+				<td>FLOAT</td>
+				<td>Количество оплаченных часов</td>
+			</tr>
+		</tbody>
+	</table>
+	
+<pre><code>-- Создание таблицы attractions_orders
+CREATE TABLE attractions_orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT,
+  attraction_id INT,
+  hours FLOAT,
+  FOREIGN KEY (order_id) REFERENCES orders(id),
+  FOREIGN KEY (attraction_id) REFERENCES attractions(id)
+);</code></pre>
+</div>
+
+
+
+<div class="break-avoid">
+	<h2>Таблица "food"</h2>
+<p>Таблица "food" содержит список доступной еды в Аквапарке, включая идентификатор, название, описание и цену. Эти данные необходимы, чтобы можно было связать заказы, содержащие еду, с конкретными позициями в меню и их ценой.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор блюда</td>
+			</tr>
+			<tr>
+				<td>name</td>
+				<td>VARCHAR(100)</td>
+				<td>Название блюда</td>
+			</tr>
+			<tr>
+				<td>description</td>
+				<td>TEXT</td>
+				<td>Описание блюда</td>
+			</tr>
+			<tr>
+				<td>price</td>
+				<td>DECIMAL(10,2)</td>
+				<td>Цена за одно блюдо</td>
+			</tr>
+		</tbody>
+	</table>
+	
+<pre><code>-- Создание таблицы food
+CREATE TABLE food (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  description TEXT,
+  price DECIMAL(10,2)
+);
+</code></pre>
+</div>
+
+<div class="break-avoid">
+	<h2>Таблица "food_orders"</h2>
+<p>Таблица "food_orders" содержит информацию о том, какая еда была заказана в каждом заказе, включая идентификатор заказа, идентификатор еды, количество еды и идентификатор этой записи. С помощью FOREIGN KEY связь устанавливается с таблицами orders и food, чтобы можно было получить информацию о заказе и еде, связанную с каждой записью о заказе еды.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор заказа еды</td>
+			</tr>
+			<tr>
+				<td>order_id</td>
+				<td>INT</td>
+				<td>Идентификатор заказа, к которому относится данный заказ еды (связь с таблицей "orders")</td>
+			</tr>
+			<tr>
+				<td>food_id</td>
+				<td>INT</td>
+				<td>Идентификатор блюда из меню (связь с таблицей "food")</td>
+			</tr>
+			<tr>
+				<td>quantity</td>
+				<td>INT</td>
+				<td>Количество заказанного блюда</td>
+			</tr>
+		</tbody>
+	</table>
+	
+<pre><code>-- Создание таблицы food_orders
+CREATE TABLE food_orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT,
+  food_id INT,
+  quantity INT,
+  FOREIGN KEY (order_id) REFERENCES orders(id),
+  FOREIGN KEY (food_id) REFERENCES food(id)
+);
+</code></pre>
+
+</div>
+
+
+
+<div class="break-avoid">
+	<h2>Таблица "roles"</h2>
+	<p>Таблица "roles" содержит список должностей, доступных в Аквапарке, и их идентификаторы. В этой таблице необходимо заранее добавить все доступные должности, чтобы затем можно было связать их с сотрудниками.</p>
+</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор должности</td>
+			</tr>
+			<tr>
+				<td>name</td>
+				<td>VARCHAR(100)</td>
+				<td>Название должности</td>
+			</tr>
+		</tbody>
+	</table>
+	<pre><code>-- Создание таблицы roles
+CREATE TABLE roles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100)
+);
+</code></pre>
+</div>
+
+<div class="break-avoid">
+<h2>Таблица "staff"</h2>
+	<p>Таблица "staff" содержит информацию о сотрудниках Аквапарка, включая их идентификатор, имя, идентификатор должности, на которой они работают, и зарплату. С помощью FOREIGN KEY связь устанавливается с таблицей roles, чтобы можно было получить информацию о должности, занимаемой каждым сотрудником.</p>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор сотрудника</td>
+			</tr>
+			<tr>
+				<td>name</td>
+				<td>VARCHAR(100)</td>
+				<td>Имя сотрудника</td>
+			</tr>
+			<tr>
+				<td>role_id</td>
+				<td>INT</td>
+				<td>Идентификатор должности сотрудника (связь с таблицей "roles")</td>
+			</tr>
+			<tr>
+				<td>salary</td>
+				<td>DECIMAL(10,2)</td>
+				<td>Зарплата сотрудника</td>
+			</tr>
+		</tbody>
+	</table>
+	<pre><code>-- Создание таблицы staff
+CREATE TABLE staff (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  role_id INT,
+  salary DECIMAL(10,2),
+  FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+</code></pre>
+</div>
+
+
+<div class="break-avoid">
+	<h2>Таблица "involved_staff"</h2>
+<p>Таблица "involved_staff" содержит информацию о сотрудниках, задействованных в каждом заказе, включая их идентификатор, идентификатор заказа и идентификатор сотрудника. С помощью FOREIGN KEY связь устанавливается с таблицами orders и staff, чтобы можно было получить информацию о заказе и сотруднике.</p>
+	<table>
+		<thead>
+			<tr>
+				<th>Поле</th>
+				<th>Тип данных</th>
+				<th>Описание</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>id</td>
+				<td>INT</td>
+				<td>Уникальный идентификатор задействованного сотрудника в заказе</td>
+			</tr>
+			<tr>
+				<td>order_id</td>
+				<td>INT</td>
+				<td>Идентификатор заказа, к которому относится данный задействованный сотрудник (связь с таблицей "orders")</td>
+			</tr>
+			<tr>
+				<td>staff_id</td>
+				<td>INT</td>
+				<td>Идентификатор сотрудника, задействованного в заказе (связь с таблицей "staff")</td>
+			</tr>
+		</tbody>
+	</table>
+	
+<pre><code>-- Создание таблицы involved_staff
+CREATE TABLE involved_staff (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id INT,
+  staff_id INT,
+  FOREIGN KEY (order_id) REFERENCES orders(id),
+  FOREIGN KEY (staff_id) REFERENCES staff(id)
+);
+</code></pre>
+</div>
+
+<div class="break-avoid">
+	<h2>Схема связей между таблицами</h2>
+	<p>Схема связей между таблицами в базе данных системы автоматизации деятельности Аквапарка представлена на следующей диаграмме:</p>
+	<img src="diagram.png" alt="diagram" style="
+	max-width: 75%;
+    margin: 40px auto;
+    display: block;">
+
+	<p>Связи между таблицами:</p>
+
+<ul>
+  <li><strong>staff</strong> - таблица, содержащая информацию о персонале и их должностях. Эта таблица связана с таблицей <strong>roles</strong> через внешний ключ <code>role_id</code>.</li>
+  <li><strong>orders</strong> - таблица, содержащая информацию о заказах клиентов. К этой таблице по <code>id</code> привязана информация из таблиц <strong>attractions_orders</strong>, <strong>food_orders</strong> и <strong>involved_staff</strong>.</li>
+  <li><strong>attractions_orders</strong> - таблица-связка для связи многие-ко-многим между таблицами <strong>attractions</strong> и <strong>orders</strong>. Она содержит внешние ключи <code>order_id</code> и <code>attraction_id</code>, которые связывают записи из этих таблиц, а также столбец <code>hours</code>, который указывает количество оплаченных часов.</li>
+  <li><strong>food_orders</strong> - таблица-связка для связи многие-ко-многим между таблицами <strong>food</strong> и <strong>orders</strong>. Она содержит внешние ключи <code>order_id</code> и <code>food_id</code>, которые связывают записи из этих таблиц, а также столбец <code>quantity</code>, который указывает количество заказанных блюд.</li>
+  <li><strong>involved_staff</strong> - таблица-связка для связи многие-ко-многим между таблицами <strong>staff</strong> и <strong>orders</strong>. Она содержит внешние ключи <code>order_id</code> и <code>staff_id</code>, которые связывают записи из этих таблиц.</li>
+</ul>
+</div>
+
+
+
+<div class="break-avoid">
+<h2>Примеры запросов к базе данных</h2>
+<h3>Удаление заказа</h3>
+<pre><code>DELETE FROM orders
+WHERE id = 1;
+DELETE FROM food_orders WHERE order_id = 1;
+DELETE FROM attractions_orders WHERE order_id = 1;
+DELETE FROM involved_staff WHERE order_id = 1;
+</code></pre>
+
+</div>
+
+<div class="break-avoid">
+<h3>Подсчет стоимости заказа (аттракциона и еды)</h3>
+<pre><code>SET @order_id = 2;
+SELECT 
+    (SELECT SUM(fo.quantity * f.price) 
+     FROM food_orders fo 
+     JOIN food f ON fo.food_id = f.id 
+     WHERE fo.order_id = @order_id) 
+     + 
+    (SELECT SUM(ao.hours * a.price) 
+     FROM attractions_orders ao 
+     JOIN attractions a ON ao.attraction_id = a.id 
+     WHERE ao.order_id = @order_id) AS total_price;</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Подсчет выручки за день</h3>
+<pre><code>WITH orders_on_date AS (
+  SELECT id
+  FROM orders
+  WHERE DATE(order_date) = CURDATE()
+)
+SELECT 
+  (SELECT SUM(ao.hours*a.price)
+   FROM attractions_orders ao JOIN attractions a ON ao.attraction_id = a.id
+   WHERE ao.order_id IN (SELECT id FROM orders_on_date))
+  + 
+  (SELECT SUM(fo.quantity * f.price) 
+   FROM food_orders fo JOIN food f ON fo.food_id = f.id 
+   WHERE fo.order_id IN (SELECT id FROM orders_on_date)) AS total_price;
+</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Список сотрудников, участвовавших в конкретном заказе</h3>
+<pre><code>SELECT s.name, r.name
+FROM involved_staff i
+JOIN staff s ON
+    i.staff_id = s.id
+JOIN roles r ON
+    s.role_id = r.id
+WHERE i.order_id = 12;</code></pre>
+
+</div>
+
+<div class="break-avoid">
+<h3>Список сотрудников, не участвовавших в заказах сегодня</h3>
+<pre><code>SELECT s.name
+FROM staff s
+WHERE s.id NOT IN(
+    SELECT DISTINCT i.staff_id
+    FROM involved_staff i
+    JOIN orders o ON
+    	i.order_id = o.id
+    WHERE
+    	DATE(o.order_date) = CURDATE()
+);</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Список сотрудников, не участвовавших в заказах 7 дней</h3>
+<pre><code>SELECT staff.name
+FROM staff
+LEFT JOIN involved_staff ON staff.id = involved_staff.staff_id 
+	AND involved_staff.order_id IN(
+        SELECT id FROM orders
+        WHERE orders.order_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    )
+WHERE involved_staff.id IS NULL;</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Средняя зарплата сотрудников по каждой должности</h3>
+<pre><code>SELECT 
+	roles.name, 
+	AVG(staff.salary) as average_salary
+FROM roles
+INNER JOIN staff ON roles.id = staff.role_id
+GROUP BY roles.name;</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Топ-10 самых популярных блюд меню</h3>
+<pre><code>SELECT 
+	f.name, 
+	COUNT(*) AS total_orders
+FROM food_orders fo
+JOIN food f ON fo.food_id = f.id
+GROUP BY f.id
+ORDER BY total_orders DESC
+LIMIT 10;
+</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Список блюд с ценой меньше 200</h3>
+<pre><code>SELECT name, price
+FROM food WHERE price < 200;
+</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Список блюд, которые никогда не заказывались</h3>
+<pre><code>SELECT id, name
+FROM food
+WHERE id NOT IN (
+    SELECT food_id FROM food_orders
+);
+</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Список аттракционов</h3>
+<pre><code>SELECT id, name, price 
+FROM attractions;</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Самый популярный аттракцион</h3>
+<pre><code>SELECT
+    a.name,
+    COUNT(ao.attraction_id) AS num_orders,
+    a.price
+FROM
+    attractions_orders ao
+JOIN attractions a ON
+    ao.attraction_id = a.id
+GROUP BY
+    a.id
+ORDER BY
+    num_orders
+DESC
+LIMIT 1;</code></pre>
+</div>
+
+<div class="break-avoid">
+<h3>Количество посетителей за сегодня</h3>
+<pre><code>SELECT COUNT(*) FROM orders 
+WHERE DATE(order_date) = CURDATE();</code></pre>
+</div>
+<div class="break-avoid end">
+	<h2 style="page-break-before: always;">Заключение</h2>
+	<p>Создание базы данных для системы автоматизации деятельности Аквапарка позволит упорядочить и ускорить процессы управления данными о заказах, аттракционах и меню еды, а также удобнее следить за персоналом. С помощью связей между таблицами можно легко собирать статистику, например, "какие развлечения и блюда пользуются наибольшим спросом" или "кто самый активный сотрудник".</p> 
+
+	<p>Кроме того, благодаря использованию таблиц-связок для связи многие-ко-многим между таблицами, можно легко добавлять новые записи в базу данных без необходимости изменения схемы таблиц. Это делает нашу базу данных гибкой и расширяемой для будущих нужд аквапарка.</p>
+
+	<p>Таким образом, база данных облегчает управление большим объёмом данных и повышает эффективность работы сотрудников Аквапарка. И, надеемся, наши данные не утекут, как по водяной горке.</p>
+</div>
+<h1 style="color:#fff;">Привет от ChatGPT</h1>
+</body>
+</html>
