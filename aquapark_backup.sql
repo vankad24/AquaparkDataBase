@@ -29,9 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attractions` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -63,9 +63,9 @@ INSERT INTO `attractions` (`id`, `name`, `description`, `price`) VALUES
 
 CREATE TABLE `attractions_orders` (
   `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `attraction_id` int(11) DEFAULT NULL,
-  `hours` float DEFAULT NULL
+  `order_id` int(11) NOT NULL,
+  `attraction_id` int(11) NOT NULL,
+  `hours` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -229,9 +229,9 @@ INSERT INTO `attractions_orders` (`id`, `order_id`, `attraction_id`, `hours`) VA
 
 CREATE TABLE `food` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -282,9 +282,9 @@ INSERT INTO `food` (`id`, `name`, `description`, `price`) VALUES
 
 CREATE TABLE `food_orders` (
   `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `food_id` int(11) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL
+  `order_id` int(11) NOT NULL,
+  `food_id` int(11) NOT NULL,
+  `quantity` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -441,8 +441,8 @@ INSERT INTO `food_orders` (`id`, `order_id`, `food_id`, `quantity`) VALUES
 
 CREATE TABLE `involved_staff` (
   `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `staff_id` int(11) DEFAULT NULL
+  `order_id` int(11) NOT NULL,
+  `staff_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -527,8 +527,8 @@ INSERT INTO `involved_staff` (`id`, `order_id`, `staff_id`) VALUES
 
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
-  `client_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `order_date` datetime DEFAULT NULL
+  `client_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `order_date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -589,7 +589,7 @@ INSERT INTO `orders` (`id`, `client_name`, `order_date`) VALUES
 
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -614,9 +614,9 @@ INSERT INTO `roles` (`id`, `name`) VALUES
 
 CREATE TABLE `staff` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `role_id` int(11) DEFAULT NULL,
-  `salary` decimal(10,2) DEFAULT NULL
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `salary` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --

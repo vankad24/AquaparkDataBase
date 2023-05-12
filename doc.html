@@ -123,9 +123,9 @@
 <pre><code>-- Создание таблицы attractions
 CREATE TABLE attractions (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100),
-  description TEXT,
-  price DECIMAL(10,2)
+  name VARCHAR(100) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(10,2) NOT NULL
 );
 </code></pre>
 </div>
@@ -163,8 +163,8 @@ CREATE TABLE attractions (
 	<pre><code>-- Создание таблицы orders
 CREATE TABLE orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  client_name VARCHAR(100),
-  order_date DATETIME,
+  client_name VARCHAR(100) NOT NULL,
+  order_date DATETIME NOT NULL,
 );
 </code></pre>
 </div>
@@ -208,9 +208,9 @@ CREATE TABLE orders (
 <pre><code>-- Создание таблицы attractions_orders
 CREATE TABLE attractions_orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id INT,
-  attraction_id INT,
-  hours FLOAT,
+  order_id INT NOT NULL,
+  attraction_id INT NOT NULL,
+  hours FLOAT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id),
   FOREIGN KEY (attraction_id) REFERENCES attractions(id)
 );</code></pre>
@@ -256,9 +256,9 @@ CREATE TABLE attractions_orders (
 <pre><code>-- Создание таблицы food
 CREATE TABLE food (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100),
-  description TEXT,
-  price DECIMAL(10,2)
+  name VARCHAR(100) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(10,2) NOT NULL
 );
 </code></pre>
 </div>
@@ -301,9 +301,9 @@ CREATE TABLE food (
 <pre><code>-- Создание таблицы food_orders
 CREATE TABLE food_orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id INT,
-  food_id INT,
-  quantity INT,
+  order_id INT NOT NULL,
+  food_id INT NOT NULL,
+  quantity INT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id),
   FOREIGN KEY (food_id) REFERENCES food(id)
 );
@@ -341,7 +341,7 @@ CREATE TABLE food_orders (
 	<pre><code>-- Создание таблицы roles
 CREATE TABLE roles (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100)
+  name VARCHAR(100) NOT NULL
 );
 </code></pre>
 </div>
@@ -384,9 +384,9 @@ CREATE TABLE roles (
 	<pre><code>-- Создание таблицы staff
 CREATE TABLE staff (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100),
-  role_id INT,
-  salary DECIMAL(10,2),
+  name VARCHAR(100) NOT NULL,
+  role_id INT NOT NULL,
+  salary DECIMAL(10,2) NOT NULL,
   FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 </code></pre>
@@ -426,8 +426,8 @@ CREATE TABLE staff (
 <pre><code>-- Создание таблицы involved_staff
 CREATE TABLE involved_staff (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  order_id INT,
-  staff_id INT,
+  order_id INT NOT NULL,
+  staff_id INT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id),
   FOREIGN KEY (staff_id) REFERENCES staff(id)
 );
